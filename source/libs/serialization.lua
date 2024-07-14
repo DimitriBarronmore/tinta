@@ -1,4 +1,20 @@
+local time, callback, mslimit
+local depth = 0
 function JTokenToRuntimeObject(token)
+    if playdate and mslimit then
+        if not time then
+            time = playdate.getCurrentTimeMilliseconds()
+        else
+            local time2 = playdate.getCurrentTimeMilliseconds()
+            if (time2 - time) > (mslimit or 1000) then
+                time = nil
+                if callback then
+                    callback()
+                end
+                coroutine.yield()
+            end
+        end
+    end
     if 'number' == type(token) then
         return IntValue(token)
     end
@@ -149,6 +165,22 @@ function JTokenToRuntimeObject(token)
     end
     
     error("101. Failed to convert token to runtime object: " .. dump(token))
+end
+if playdate then
+    _JTokenToRuntimeObject = JTokenToRuntimeObject
+    function JTokenToRuntimeObject(token, calling_mslimit, yield_callback)
+        depth = depth + 1
+        if depth == 1 then
+            callback = yield_callback
+            mslimit = calling_mslimit
+        end
+        local res = _JTokenToRuntimeObject(token)
+        depth = depth - 1
+        if depth == 0 then
+            time, yield_callback, mslimit = nil, nil, nil
+        end
+        return res
+    end
 end
 
 function JArrayToContainer(jArray)

@@ -4,11 +4,11 @@ require("engine.ink_header")
 ---@field state StoryState
 local Story = classic:extend()
 
-function Story:new(book)
+function Story:new(book, mslimit, yield_callback)
     self._recursiveContinueCount = 0
     self.inkVersionCurrent = 21;
     self.listDefinitions = serialization.JTokenToListDefinitions(book.listDefs)
-    self._mainContentContainer = serialization.JTokenToRuntimeObject(book.root)
+    self._mainContentContainer = serialization.JTokenToRuntimeObject(book.root, mslimit or 1000, yield_callback)
     self:ResetState()
     self._externals = {}
     self.allowExternalFunctionFallbacks = true

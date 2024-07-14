@@ -35,6 +35,20 @@ Story = import('tinta/engine/story')
 story = Story(storyDefinition)
 ```
 
+When using this library on the Playdate, initializing a large story would ordinarily take long enough to trigger the ten-second watchdog. To get around this, the process will yield to the system every second by default. You can change how often it yields and provide a pre-yield callback as follows:
+
+```lua
+local mytimeout = 100
+local counter = 0
+local yield_callback = function()
+    counter += 1
+    playdate.graphics.clear()
+    playdate.graphics.drawText("yields: ".. counter, 20, 20)
+    playdate.display.flush()
+end
+story = Story(storyDefinition, mytimeout, yield_callback)
+```
+
 2 examples loop to run the story are provided in the `run.lua` file
 
 A simple synchronous version:
