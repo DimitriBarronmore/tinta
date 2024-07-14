@@ -1,4 +1,4 @@
-import("../engine/ink_header")
+require("engine.ink_header")
 
 ---@class Story
 ---@field state StoryState

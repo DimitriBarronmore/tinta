@@ -273,9 +273,9 @@ Rename this folder `tinta`.
 then in your lua code:
 
 ```
-Story = require("tinta/love")
+require("tinta")
 
-local my_story = import("my_story")
+local my_story = require("my_story")
 local story = Story(my_story)
 ```
 
